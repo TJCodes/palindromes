@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>Palindrome</title>
+
+        <style>
+            body, html {
+                text-align: center;
+                margin: 0 auto
+                background: #0F2027;
+                background: -webkit-linear-gradient(to right, #2C5364, #203A43, #0F2027);
+                background: linear-gradient(to right, #2C5364, #203A43, #0F2027);
+                color: white;
+
+            }
+
+            p, label {
+                font-family: sans-serif;
+            }
+
+            h1 {
+                font-variant: small-caps;
+            }
+
+            .container {
+                height: 100vh;
+                width: 100vw;
+                position: relative;
+                margin: 0 auto;
+            }
+
+            .content {
+                margin: 0;
+                position: absolute;
+                top: 30%;
+                left: 50%;
+                -ms-transform: translateY(-50%);
+                transform: translateY(-50%);
+                -ms-transform: translateX(-50%);
+                transform: translateX(-50%);
+            }
+
+            #hide:hover {
+                cursor: pointer;
+                color: deepskyblue;
+            }
+        </style>
+
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="content">
+                <h1>palindrome checker!</h1>
+                <label style="top: 50%">
+                    Enter a word to check if it is a Palindrome!
+                </label>
+                <br>
+                <input type="text" id="text">
+                <input type="submit" value="check" onclick="checkPalindrome()">
+                <br><br>
+                <label>
+                    Display the last 10 Palindromes in the last 10 minutes
+                </label>
+                <br>
+                <input type="button" value="display" onclick="displayPalindromes()">
+                <p id="resultText"></p>
+                <p id="displayPalindromes" hidden></p>
+                <p style="color: lightblue; text-decoration: underline;" id="hide" hidden>
+                    hide
+                </p>
+            </div>
+        </div>
+
+        <script>
+            const prevPalindromes = [];
+            const list = document.getElementById('displayPalindromes');
+            const hide = document.getElementById('hide');
+            let x = 0;
+
+            function checkPalindrome(){
+                const resultText = document.getElementById('resultText');
+                const remove = /[\W_]/g
+                let inputString = document.getElementById('text').value;
+                let editedString = inputString.toLowerCase().replace(remove, "")
+                let reversedString = editedString.split("").reverse().join("");
+
+                if (editedString === reversedString){
+                    resultText.innerHTML = inputString + " is a palindrome!";
+                    
+                    //if there are already 10 palindrome in the array, remove the oldest element before adding the new palindrome
+                    if (x > 9) 
+                        prevPalindromes.shift();
+
+                    prevPalindromes[x] = inputString;
+                    
+                    //set a 10 minute timer for each palindrome added to the array
+                    function timer(){
+                        setTimeout(function(){ 
+                            prevPalindromes.shift();
+                            x--;
+                        }, 600000);
+                    }
+                    timer();
+                    
+                    //Update the list if it is already being displayed
+                    if (list.hidden == false){
+                        displayPalindromes();
+                    }
+                    x++;
+
+                }
+                else 
+                    resultText.innerHTML= inputString + " is not a palindrome";
+            }
+
+            function displayPalindromes(){
+                let i = 0;
+                let z = "";
+
+                list.removeAttribute('hidden');
+                hide.removeAttribute('hidden');
+
+                for (i = 0; i < prevPalindromes.length ; i++){
+                    z = z + prevPalindromes[i] + "<br>";
+                    list.innerHTML = z;
+                }
+            }
+
+            hide.addEventListener('click', function(){
+                list.hidden = true;
+                hide.hidden = true;
+            });
+        </script>
+    </body>
+</html>
